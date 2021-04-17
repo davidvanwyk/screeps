@@ -1,11 +1,4 @@
-import StateMachine from "@taoqf/javascript-state-machine";
-
-export enum HarvesterState {
-  SPAWNING,
-  HARVESTING,
-  DEPOSITING,
-  UPGRADING
-}
+import { WorkerState } from './worker_states';
 
 export class Harvester {
 
@@ -30,18 +23,18 @@ export class Harvester {
     // precedence.
 
     if(!creep.memory.state) {
-      creep.memory.state = HarvesterState.SPAWNING;
+      creep.memory.state = WorkerState.SPAWNING;
     }
 
     switch(creep.memory.state) {
       // FSM of the Harvester Type Creep
 
-      case HarvesterState.SPAWNING:
+      case WorkerState.SPAWNING:
         // On spawn, immediately start harvesting.
         this.transitionFromSpawningToHarvesting(creep);
         break;
 
-      case HarvesterState.HARVESTING:
+      case WorkerState.HARVESTING:
         // Harvesting takes first priority so is our first check.
         if (this.shouldHarvest(creep)) {
           this.moveToHarvest(creep);
@@ -52,7 +45,7 @@ export class Harvester {
         }
         break;
 
-      case HarvesterState.DEPOSITING:
+      case WorkerState.DEPOSITING:
         // In this state, depositing is our first priority (we won't have lost any resources), so is our first check.
         if (this.shouldDeposit(creep)) {
           this.moveToDeposit(creep);
@@ -63,7 +56,7 @@ export class Harvester {
         }
         break;
 
-      case HarvesterState.UPGRADING:
+      case WorkerState.UPGRADING:
         // In this state, upgrading is our last priority, so is our last check as we would rather switch to depositing
         // or harvesting if possible.
         if (this.shouldDeposit(creep)) {
@@ -81,33 +74,33 @@ export class Harvester {
 
   // Transition Functions
 
-  private transitionFromSpawningToHarvesting(creep: Creep) {
-    creep.memory.state = HarvesterState.HARVESTING;
+  public transitionFromSpawningToHarvesting(creep: Creep) {
+    creep.memory.state = WorkerState.HARVESTING;
     creep.say(this._harvest_text);
   }
 
   private transitionFromHarvestingToDepositing(creep: Creep) {
-    creep.memory.state = HarvesterState.DEPOSITING;
+    creep.memory.state = WorkerState.DEPOSITING;
     creep.say(this._deposit_text);
   }
 
   private transitionFromHarvestingToUpgrading(creep: Creep) {
-    creep.memory.state = HarvesterState.UPGRADING;
+    creep.memory.state = WorkerState.UPGRADING;
     creep.say(this._upgrade_text);
   }
 
   private transitionFromDepositingToUpgrading(creep: Creep) {
-    creep.memory.state = HarvesterState.UPGRADING;
+    creep.memory.state = WorkerState.UPGRADING;
     creep.say(this._upgrade_text);
   }
 
   private transitionFromUpgradingToDepositing(creep: Creep) {
-    creep.memory.state = HarvesterState.DEPOSITING;
+    creep.memory.state = WorkerState.DEPOSITING;
     creep.say(this._deposit_text);
   }
 
-  private transitionFromAnyToHarvesting(creep: Creep) {
-    creep.memory.state = HarvesterState.HARVESTING;
+  public transitionFromAnyToHarvesting(creep: Creep) {
+    creep.memory.state = WorkerState.HARVESTING;
     creep.say(this._harvest_text);
   }
 
@@ -115,7 +108,7 @@ export class Harvester {
 
   // ------------------ Logic Checks --------------------- //
 
-  private shouldHarvest(creep: Creep) {
+  public shouldHarvest(creep: Creep) {
     // Should harvest if we have free capacity.
     return creep.store.getFreeCapacity() != 0;
   }
@@ -128,7 +121,7 @@ export class Harvester {
     return hasNoCapacity && hasLocationsToDeposit;
   }
 
-  private hasNoCapacity(creep: Creep) {
+  public hasNoCapacity(creep: Creep) {
     // Check if our creep has capacity for any resources.
     return creep.store.getFreeCapacity() == 0;
   }

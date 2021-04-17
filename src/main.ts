@@ -1,5 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Harvester } from './roles/workers/Harvester';
+import { Builder } from './roles/workers/Builder';
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -8,6 +9,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const harvesterBody = [ WORK, CARRY, MOVE, MOVE ];
 
   const harvesterRole = new Harvester();
+  const builderRole = new Builder();
 
   const creeps = Game.creeps;
   const num_creeps = Object.keys(creeps).length;
@@ -21,6 +23,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
         const body_parts = _.countBy(creep.body.map(bodyParts => bodyParts.type));
         worker_body_parts += body_parts[WORK];
         harvesterRole.run(creep);
+      } else if (creep.memory.role == 'builder') {
+        builderRole.run(creep);
       }
     }
   }

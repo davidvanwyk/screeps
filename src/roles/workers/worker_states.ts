@@ -1,0 +1,7 @@
+export enum WorkerState {
+  SPAWNING,
+  HARVESTING,
+  DEPOSITING,
+  UPGRADING,
+  BUILDING
+}
